@@ -133,8 +133,8 @@ void handle_key_down() {
 // check and process keypress
 void handle_input(){
     for (int i = 0; i < 5; i++) {
-        for (int i = 0; i < BUTTON_COUNT; i++) {
-            button_state[i] = digitalRead(buttons[i]);
+        for (int button = 0; button < BUTTON_COUNT; button++) {
+            button_state[button] = digitalRead(buttons[button]);
         }
         bool something_happend = false;
         if (button_state[0] == 0) {
@@ -194,7 +194,7 @@ void set_ssr_state(float temp_h, float temp_c) {
 
 // set display when state = 1
 void set_display_state_1(uint8_t display_out[], float temp_h, float temp_c) {
-    if (temp_h < 105 and temp_h > -5) {
+    if (temp_h < 100 and temp_h >= 0) {
         display_out[0] = display.encodeDigit(int(temp_h) / 10 % 10);
         display_out[1] = display.encodeDigit(int(temp_h) % 10);
     }
@@ -203,7 +203,7 @@ void set_display_state_1(uint8_t display_out[], float temp_h, float temp_c) {
         display_out[1] = DISPLAY_ERROR;
     }
 
-    if (temp_c < 105 and temp_c > -5) {
+    if (temp_c < 100 and temp_c >= 0) {
         display_out[2] = display.encodeDigit(int(temp_c) / 10 % 10);
         display_out[3] = display.encodeDigit(int(temp_c) % 10);
     }
@@ -266,7 +266,7 @@ void flash(uint8_t display_out[]) {
 }
 
 
-// flash with display
+// flash with display after flash_counter reach zero
 void start_flash() {
     flash_counter = FLASH_MAX;
 }
