@@ -108,11 +108,12 @@ void change_state() {
 
 // key up pressed
 void handle_key_up() {
-    start_flash();
     if (state == 2 ) {
+        start_flash();
         temp_h_target++;
     }
     if (state == 3 ) {
+        start_flash();
         temp_c_target++;
     }
 }
@@ -120,11 +121,12 @@ void handle_key_up() {
 
 // key down pressed
 void handle_key_down() {
-    start_flash();
     if (state == 2 ) {
+        start_flash();
         temp_h_target--;
     }
     if (state == 3 ) {
+        start_flash();
         temp_c_target--;
     }
 }
@@ -132,7 +134,7 @@ void handle_key_down() {
 
 // check and process keypress
 void handle_input(){
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 7; i++) {
         for (int button = 0; button < BUTTON_COUNT; button++) {
             button_state[button] = digitalRead(buttons[button]);
         }
