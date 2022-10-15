@@ -36,6 +36,7 @@
 #define BRIGHTNESS_MIN 8
 
 #define FLASH_MAX 3   // in main loop cycles
+#define PUMP_STATE_WAIT_MAX 120   // in main loop cycles
 
 #define EEPROM_TEMP_H 0
 #define EEPROM_TEMP_C 1
@@ -66,7 +67,7 @@ const uint8_t DISPLAY_C = SEG_A | SEG_D | SEG_F | SEG_E;           // S
 
 uint8_t brightness = BRIGHTNESS_MIN + 1;
 
-uint8_t state = 0;
+uint8_t state = 1;
 // state 0  ->  no display output
 // state 1  ->  hot water temp / cold water temp
 // state 2  ->  minimal hot water temperature
@@ -76,6 +77,9 @@ uint8_t temp_h_target = 30;
 uint8_t temp_c_target = 20;
 
 int8_t flash_counter = -1;
+
+uint16_t pump_state_wait = 0;
+uint8_t pump_last_state = LOW;
 
 TM1637Display display(DISPLAY_CLK, DISPLAY_DIO);
 
@@ -183,13 +187,15 @@ float get_term_from_pin(uint8_t pin_number) {
 
 // start or stop ssr relay
 void set_ssr_state(float temp_h, float temp_c) {
+    uint8_t new_state = LOW;
     if ((temp_h >= temp_h_target) and (temp_c < temp_c_target))
     {
-        digitalWrite(SSR_PIN, HIGH);
+        new_state = HIGH;
     }
-    else
-    {
-        digitalWrite(SSR_PIN, LOW);
+    if ((new_state != pump_last_state) and (pump_state_wait == 0)) {
+        digitalWrite(SSR_PIN, new_state);
+        pump_state_wait = PUMP_STATE_WAIT_MAX;
+        pump_last_state = new_state;
     }
 }
 
@@ -285,6 +291,12 @@ void check_flash_counter(uint8_t display_out[]) {
     }
 }
 
+void check_pump_counter()
+{
+    if (pump_state_wait > 0){
+        pump_state_wait--;
+    }
+}
 
 void loop() {
     uint8_t display_out[] = { 0, 0, 0, 0 };
@@ -294,8 +306,11 @@ void loop() {
 
     handle_input();
     set_display_state(display_out, temp_h, temp_c);
+    check_pump_counter();
     check_flash_counter(display_out);
-  
+
+    //redraw display two times to prevents artifacts
+    display.setSegments(display_out);
     display.setSegments(display_out);
 
     set_ssr_state(temp_h, temp_c);
