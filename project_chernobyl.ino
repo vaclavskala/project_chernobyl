@@ -63,7 +63,7 @@ const uint8_t DISPLAY_AHOJ[] = {
 const uint8_t DISPLAY_ERROR = SEG_G;                               // -
 const uint8_t DISPLAY_H = SEG_B | SEG_C | SEG_E | SEG_F | SEG_G;   // H
 const uint8_t DISPLAY_S = SEG_A | SEG_C | SEG_D | SEG_F | SEG_G;   // S
-const uint8_t DISPLAY_C = SEG_A | SEG_D | SEG_F | SEG_E;           // S
+const uint8_t DISPLAY_C = SEG_A | SEG_D | SEG_F | SEG_E;           // C
 
 uint8_t brightness = BRIGHTNESS_MIN + 1;
 
@@ -280,7 +280,7 @@ void start_flash() {
 }
 
 
-// used to wait before save to protect EEPROM before to many writes
+// used to wait before save to protect EEPROM before too many writes
 void check_flash_counter(uint8_t display_out[]) {
     if (flash_counter == 0) {
         flash_counter = -1;
